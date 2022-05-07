@@ -20,9 +20,8 @@ Or with ~use-package~ and ~straight-use-package~:
   :straight (:repo "KarimAziev/momentary-popup" :type git :host github)
   :hook ((momentary-popup-mode . visual-line-mode)
          (momentary-popup-inspect-mode . visual-line-mode))
-  :bind ((:map momentary-popup-keymap
-               ("C-c o" . momentary-popup-open-inspector)
-               ("C-c C-o" . momentary-popup-open-inspector))
+  :bind ((:map momentary-popup-switch-keymap
+               ("C-c o" . momentary-popup-open-inspector))
          (:map momentary-popup-inspect-keymap
                ("C-c C-o" . momentary-popup-maybe-find-file))))
 #+end_src
@@ -38,14 +37,11 @@ Display remains until next event is input.
 To persist popup type key binding from ~momentary-popup-switch-keymap~ for command ~momentary-popup-open-inspector~ (by default (kbd "C-c C-o") and (kbd "C-c o")).
 
 SETUP-ARGS can includes keymaps, syntax table, filename and function.
-See a function `momentary-popup-open-inspector'.
 
 + ~momentary-popup-file~ (file)
 Momentarily display content of the FILE in popup window.
 
 Display remains until next event is input.
-
-To persist popup use \<momentary-popup-switch-keymap> `\[momentary-popup-open-inspector]'.
 
 + ~momentary-popup-open-inspector~
 Open or restore popup in a buffer `momentary-popup-inspect-buffer-name'.
