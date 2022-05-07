@@ -262,20 +262,14 @@ To persist popup use \\<momentary-popup-switch-keymap>\
   "Runs momentary on file save when this mode is turned on"
   :lighter " momentary"
   :keymap momentary-popup-inspect-keymap
-  :global nil
-  (if momentary-mode
-      (add-hook 'before-save-hook 'momentary nil 'local)
-    (remove-hook 'before-save-hook 'momentary 'local)))
+  :global nil)
 
 ;;;###autoload
 (define-minor-mode momentary-popup-mode
   "Runs momentary on file save when this mode is turned on"
   :lighter " momentary"
   :keymap momentary-popup-switch-keymap
-  :global nil
-  (if momentary-mode
-      (add-hook 'before-save-hook 'momentary nil 'local)
-    (remove-hook 'before-save-hook 'momentary 'local)))
+  :global nil)
 
 (provide 'momentary-popup)
 ;;; momentary-popup.el ends here
