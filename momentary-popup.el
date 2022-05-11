@@ -219,7 +219,7 @@ See a function `momentary-popup-open-inspector'."
       (with-current-buffer-window
           buffer
           (cons 'display-buffer-at-bottom
-                '((window-height . fit-window-to-buffer)))
+                '((window-height . 0.4)))
           (momentary-popup-setup-quit-fn)
         (momentary-popup-mode)
         (insert momentary-popup-content)))))
