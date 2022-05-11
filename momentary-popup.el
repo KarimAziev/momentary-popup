@@ -222,7 +222,8 @@ See a function `momentary-popup-open-inspector'."
                 '((window-height . 0.4)))
           (momentary-popup-setup-quit-fn)
         (momentary-popup-mode)
-        (insert momentary-popup-content)))))
+        (insert momentary-popup-content)
+        (shrink-window-if-larger-than-buffer)))))
 
 (defun momentary-popup-file (file)
   "Momentarily display content of the FILE in popup window.
