@@ -115,6 +115,12 @@ If SETUP-ARGS contains syntax table, it will be used in the inspect buffer."
         (keymaps (seq-filter 'keymapp setup-args))
         (stx-table (seq-find 'syntax-table-p setup-args))
         (mode-fn (seq-find 'functionp setup-args)))
+    (setq momentary-popup-content (if (or
+                                       mode-fn
+                                       (not (stringp content)))
+                                      (apply 'momentary-popup-fontify
+                                             (list content mode-fn))
+                                    content))
     (with-current-buffer buffer
       (with-current-buffer-window
           buffer
@@ -127,7 +133,7 @@ If SETUP-ARGS contains syntax table, it will be used in the inspect buffer."
                 (erase-buffer)
                 (momentary-popup-inspect-mode)
                 (progn  (save-excursion
-                          (insert content))
+                          (insert momentary-popup-content))
                         (add-hook 'kill-buffer-hook
                                   'momentary-popup-minibuffer-select-window
                                   nil t)
@@ -151,7 +157,7 @@ If SETUP-ARGS contains syntax table, it will be used in the inspect buffer."
                                         map)))
                            (set-keymap-parent map (current-local-map))
                            map))))))
-        (insert content))
+        (insert momentary-popup-content))
       (when stx-table
         (set-syntax-table stx-table))
       (setq header-line-format (or header-line-format "*Inspect*"))
@@ -181,20 +187,25 @@ Display remains until next event is input. If the input is a key binding
       (setq header-line-format
             (substitute-command-keys "\\<momentary-popup-switch-keymap>\
 Use `\\[momentary-popup-open-inspector]' to open popup"))
-      (visual-line-mode 1)
-      (set-keymap-parent momentary-popup-switch-keymap
-                         (current-local-map))
-      (unwind-protect
-          (setq momentary-popup-window-last-key
-                (read-key-sequence ""))
-        (quit-restore-window window 'kill)
-        (if (lookup-key momentary-popup-switch-keymap
-                        momentary-popup-window-last-key)
-            (run-at-time '0.5 nil 'momentary-popup-open-inspector)
-          (setq unread-command-events
-                (append (this-single-command-raw-keys)
-                        unread-command-events)))
-        (setq momentary-popup-window-last-key nil)))))
+      (setq buffer-read-only t)
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (momentary-popup-mode)
+        (set-keymap-parent momentary-popup-switch-keymap
+                           (current-local-map))
+        (when momentary-popup-content
+          (insert momentary-popup-content))
+        (unwind-protect
+            (setq momentary-popup-window-last-key
+                  (read-key-sequence ""))
+          (quit-restore-window window 'kill)
+          (if (lookup-key momentary-popup-switch-keymap
+                          momentary-popup-window-last-key)
+              (run-at-time '0.5 nil 'momentary-popup-open-inspector)
+            (setq unread-command-events
+                  (append (this-single-command-raw-keys)
+                          unread-command-events)))
+          (setq momentary-popup-window-last-key nil))))))
 
 (defun momentary-popup (content &rest setup-args)
   "Momentarily display CONTENT in popup window.
@@ -218,12 +229,11 @@ See a function `momentary-popup-open-inspector'."
     (with-current-buffer buffer
       (with-current-buffer-window
           buffer
-          (cons 'display-buffer-at-bottom
-                '((window-height . 0.4)))
+          (cons 'display-buffer-in-side-window
+                '((window-height . window-preserve-size)))
           (momentary-popup-setup-quit-fn)
         (momentary-popup-mode)
-        (insert momentary-popup-content)
-        (shrink-window-if-larger-than-buffer)))))
+        (insert momentary-popup-content)))))
 
 (defun momentary-popup-file (file)
   "Momentarily display content of the FILE in popup window.
@@ -260,14 +270,14 @@ To persist popup use \\<momentary-popup-switch-keymap>\
 
 ;;;###autoload
 (define-minor-mode momentary-popup-inspect-mode
-  "Runs momentary on file save when this mode is turned on"
+  "Toggle `momentary-popup-inspect-mode'."
   :lighter " momentary"
   :keymap momentary-popup-inspect-keymap
   :global nil)
 
 ;;;###autoload
 (define-minor-mode momentary-popup-mode
-  "Runs momentary on file save when this mode is turned on"
+  "Toggle momentary pop mode."
   :lighter " momentary"
   :keymap momentary-popup-switch-keymap
   :global nil)
