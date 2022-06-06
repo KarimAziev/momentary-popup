@@ -229,7 +229,7 @@ See a function `momentary-popup-open-inspector'."
     (with-current-buffer buffer
       (with-current-buffer-window
           buffer
-          (cons 'display-buffer-in-side-window
+          (cons 'display-buffer-in-direction
                 '((window-height . window-preserve-size)))
           (momentary-popup-setup-quit-fn)
         (momentary-popup-mode)
