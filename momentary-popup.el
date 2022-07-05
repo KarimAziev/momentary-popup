@@ -90,8 +90,8 @@ If CONTENT is not a string, instead of MODE-FN emacs-lisp-mode will be used."
   "If `header-line-format' is a file, open it.
 Also kill buffer `momentary-popup-inspect-buffer-name' if exists."
   (interactive)
-  (when-let ((file (seq-find 'file-exists-p (seq-filter
-                                             'stringp
+  (when-let ((file (seq-find #'file-exists-p (seq-filter
+                                             #'stringp
                                              momentary-popup-meta))))
     (when (get-buffer momentary-popup-inspect-buffer-name)
       (kill-buffer momentary-popup-inspect-buffer-name))
@@ -112,13 +112,13 @@ A function will be called without args inside quit function.
 
 If SETUP-ARGS contains syntax table, it will be used in the inspect buffer."
   (let ((buffer (get-buffer-create momentary-popup-inspect-buffer-name))
-        (keymaps (seq-filter 'keymapp setup-args))
-        (stx-table (seq-find 'syntax-table-p setup-args))
-        (mode-fn (seq-find 'functionp setup-args)))
+        (keymaps (seq-filter #'keymapp setup-args))
+        (stx-table (seq-find #'syntax-table-p setup-args))
+        (mode-fn (seq-find #'functionp setup-args)))
     (setq momentary-popup-content (if (or
                                        mode-fn
                                        (not (stringp content)))
-                                      (apply 'momentary-popup-fontify
+                                      (apply #'momentary-popup-fontify
                                              (list content mode-fn))
                                     content))
     (with-current-buffer buffer
@@ -142,6 +142,11 @@ If SETUP-ARGS contains syntax table, it will be used in the inspect buffer."
                         (use-local-map
                          (let ((map (copy-keymap
                                      momentary-popup-inspect-keymap)))
+                           (if buffer-read-only
+                               (define-key map (kbd "q")
+                                           'kill-this-buffer)
+                             (define-key map (kbd "q")
+                                         'self-insert-command))
                            (add-hook
                             'read-only-mode-hook
                             (lambda ()
@@ -167,7 +172,7 @@ If SETUP-ARGS contains syntax table, it will be used in the inspect buffer."
 (defun momentary-popup-open-inspector ()
 	"Open or restore popup in a buffer `momentary-popup-inspect-buffer-name'."
   (interactive)
-  (apply 'momentary-popup-inspect
+  (apply #'momentary-popup-inspect
          (or momentary-popup-content "")
          momentary-popup-meta))
 
@@ -218,11 +223,11 @@ SETUP-ARGS can includes keymaps, syntax table, filename and function.
 See a function `momentary-popup-open-inspector'."
   (let ((buffer (get-buffer-create
                  momentary-popup-momentary-buffer-name))
-        (mode-fn (seq-find 'functionp setup-args)))
+        (mode-fn (seq-find #'functionp setup-args)))
     (setq momentary-popup-content (if (or
                                        mode-fn
                                        (not (stringp content)))
-                                      (apply 'momentary-popup-fontify
+                                      (apply #'momentary-popup-fontify
                                              (list content mode-fn))
                                     content))
     (setq momentary-popup-meta setup-args)
