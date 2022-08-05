@@ -53,7 +53,7 @@ Keymap with commands to execute just before quiting momentary popup. Defaults:
 
 | Default Key | Command                        |
 |-------------+--------------------------------|
-| C-c o       | open content in inspect buffer |
+| C-c C-o     | open content in inspect buffer |
 
 + ~momentary-popup-inspect-keymap~
   Inspect buffer uses ~momentary-popup-inspect-keymap~ with next defaults:

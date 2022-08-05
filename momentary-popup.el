@@ -22,6 +22,7 @@
 ;;
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 ;;; Commentary:
 
 ;; This file provides functions similar to `momentary-string-display' but inside popup windows.
@@ -86,6 +87,7 @@ If CONTENT is not a string, instead of MODE-FN emacs-lisp-mode will be used."
   (when-let ((wind (active-minibuffer-window)))
     (select-window wind)))
 
+;;;###autoload
 (defun momentary-popup-maybe-find-file ()
   "If `header-line-format' is a file, open it.
 Also kill buffer `momentary-popup-inspect-buffer-name' if exists."
@@ -169,16 +171,26 @@ If SETUP-ARGS contains syntax table, it will be used in the inspect buffer."
       (unless (active-minibuffer-window)
         (select-window (get-buffer-window buffer))))))
 
+;;;###autoload
 (defun momentary-popup-open-inspector ()
 	"Open or restore popup in a buffer `momentary-popup-inspect-buffer-name'."
   (interactive)
-  (apply #'momentary-popup-inspect
-         (or momentary-popup-content "")
-         momentary-popup-meta))
+  (let ((file (seq-find #'file-exists-p (seq-filter
+                                        #'stringp
+                                        momentary-popup-meta))))
+    (unless momentary-popup-content
+      (setq momentary-popup-content
+            (when file
+              (with-temp-buffer
+                (insert-file-contents file)
+                (buffer-string)))))
+    (apply #'momentary-popup-inspect
+           (list (or momentary-popup-content "")
+                 momentary-popup-meta))))
 
 (defvar momentary-popup-switch-keymap
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-c o") 'momentary-popup-open-inspector)
+    (define-key map (kbd "C-c C-o") 'momentary-popup-open-inspector)
     map)
   "Keymap with commands to execute just before exiting.")
 
@@ -194,11 +206,9 @@ Display remains until next event is input. If the input is a key binding
 Use `\\[momentary-popup-open-inspector]' to open popup"))
       (setq buffer-read-only t)
       (let ((inhibit-read-only t))
-        (erase-buffer)
         (momentary-popup-mode)
-        (set-keymap-parent momentary-popup-switch-keymap
-                           (current-local-map))
         (when momentary-popup-content
+          (erase-buffer)
           (insert momentary-popup-content))
         (unwind-protect
             (setq momentary-popup-window-last-key
@@ -212,6 +222,7 @@ Use `\\[momentary-popup-open-inspector]' to open popup"))
                           unread-command-events)))
           (setq momentary-popup-window-last-key nil))))))
 
+;;;###autoload
 (defun momentary-popup (content &rest setup-args)
   "Momentarily display CONTENT in popup window.
 Display remains until next event is input.
@@ -240,6 +251,7 @@ See a function `momentary-popup-open-inspector'."
         (momentary-popup-mode)
         (insert momentary-popup-content)))))
 
+;;;###autoload
 (defun momentary-popup-file (file)
   "Momentarily display content of the FILE in popup window.
 
@@ -257,26 +269,25 @@ To persist popup use \\<momentary-popup-switch-keymap>\
              (buffer (get-buffer-create
                       momentary-popup-momentary-buffer-name)))
     (setq momentary-popup-meta `(,file))
-    (setq momentary-popup-content (with-temp-buffer
-                                    (let ((buffer-file-name file))
-                                      (set-auto-mode)
-                                      (insert-file-contents filename)
-                                      (font-lock-ensure)
-                                      (buffer-string))))
+    (setq momentary-popup-content nil)
     (with-current-buffer buffer
       (with-current-buffer-window
           buffer
           (cons 'display-buffer-in-side-window
                 '((window-height . fit-window-to-buffer)))
           (momentary-popup-setup-quit-fn)
-        (insert momentary-popup-content)
+        (insert-file-contents filename)
+        (let ((buffer-file-name filename))
+          (delay-mode-hooks (set-auto-mode)
+                            (font-lock-ensure))
+          (push major-mode momentary-popup-meta))
         (setq header-line-format
               (abbreviate-file-name filename))))))
 
 ;;;###autoload
 (define-minor-mode momentary-popup-inspect-mode
   "Toggle `momentary-popup-inspect-mode'."
-  :lighter " momentary"
+  :lighter " popup-inspect"
   :keymap momentary-popup-inspect-keymap
   :global nil)
 
