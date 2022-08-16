@@ -105,6 +105,7 @@ Also kill buffer `momentary-popup-inspect-buffer-name' if exists."
     (define-key map (kbd "C-c C-o") 'momentary-popup-maybe-find-file)
     map))
 
+;;;###autoload
 (defun momentary-popup-inspect (content &rest setup-args)
   "Display CONTENT in popup window.
 
