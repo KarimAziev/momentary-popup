@@ -164,8 +164,7 @@ If SETUP-ARGS contains syntax table, it will be used in the inspect buffer."
                                         keymaps
                                         map)))
                            (set-keymap-parent map (current-local-map))
-                           map))))))
-        (insert momentary-popup-content))
+                           map)))))))
       (when stx-table
         (set-syntax-table stx-table))
       (setq header-line-format (or header-line-format "*Inspect*"))
@@ -174,7 +173,7 @@ If SETUP-ARGS contains syntax table, it will be used in the inspect buffer."
 
 ;;;###autoload
 (defun momentary-popup-open-inspector ()
-	"Open or restore popup in a buffer `momentary-popup-inspect-buffer-name'."
+  "Open or restore popup in a buffer `momentary-popup-inspect-buffer-name'."
   (interactive)
   (let ((file (seq-find #'file-exists-p (seq-filter
                                         #'stringp
@@ -196,7 +195,7 @@ If SETUP-ARGS contains syntax table, it will be used in the inspect buffer."
   "Keymap with commands to execute just before exiting.")
 
 (defun momentary-popup-setup-quit-fn ()
-	"Setup a quit function for the buffer `momentary-popup-momentary-buffer-name'.
+  "Setup a quit function for the buffer `momentary-popup-momentary-buffer-name'.
 
 Display remains until next event is input. If the input is a key binding
  of a command from `momentary-popup-switch-keymap', execute it."
