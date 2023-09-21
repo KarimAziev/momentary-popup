@@ -7,6 +7,7 @@
 ;; Keywords: lisp
 ;; Version: 0.1.1
 ;; Package-Requires: ((emacs "27.1"))
+;; SPDX-License-Identifier: GPL-3.0-or-later
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -101,8 +102,8 @@ Also kill buffer `momentary-popup-inspect-buffer-name' if exists."
 
 (defvar momentary-popup-inspect-keymap
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-x 0") 'kill-this-buffer)
-    (define-key map (kbd "C-c C-o") 'momentary-popup-maybe-find-file)
+    (define-key map (kbd "C-x 0") #'kill-this-buffer)
+    (define-key map (kbd "C-c C-o") #'momentary-popup-maybe-find-file)
     map))
 
 ;;;###autoload
@@ -138,7 +139,7 @@ If SETUP-ARGS contains syntax table, it will be used in the inspect buffer."
                 (progn  (save-excursion
                           (insert momentary-popup-content))
                         (add-hook 'kill-buffer-hook
-                                  'momentary-popup-minibuffer-select-window
+                                  #'momentary-popup-minibuffer-select-window
                                   nil t)
                         (when mode-fn
                           (funcall mode-fn))
@@ -147,17 +148,17 @@ If SETUP-ARGS contains syntax table, it will be used in the inspect buffer."
                                      momentary-popup-inspect-keymap)))
                            (if buffer-read-only
                                (define-key map (kbd "q")
-                                           'kill-this-buffer)
+                                           #'kill-this-buffer)
                              (define-key map (kbd "q")
-                                         'self-insert-command))
+                                         #'self-insert-command))
                            (add-hook
                             'read-only-mode-hook
                             (lambda ()
                               (if buffer-read-only
                                   (define-key map (kbd "q")
-                                              'kill-this-buffer)
+                                              #'kill-this-buffer)
                                 (define-key map (kbd "q")
-                                            'self-insert-command)))
+                                            #'self-insert-command)))
                             t)
                            (when keymaps
                              (setq map (make-composed-keymap
@@ -190,7 +191,7 @@ If SETUP-ARGS contains syntax table, it will be used in the inspect buffer."
 
 (defvar momentary-popup-switch-keymap
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-c C-o") 'momentary-popup-open-inspector)
+    (define-key map (kbd "C-c C-o") #'momentary-popup-open-inspector)
     map)
   "Keymap with commands to execute just before exiting.")
 
@@ -216,7 +217,7 @@ Use `\\[momentary-popup-open-inspector]' to open popup"))
           (quit-restore-window window 'kill)
           (if (lookup-key momentary-popup-switch-keymap
                           momentary-popup-window-last-key)
-              (run-at-time '0.5 nil 'momentary-popup-open-inspector)
+              (run-at-time '0.5 nil #'momentary-popup-open-inspector)
             (setq unread-command-events
                   (append (this-single-command-raw-keys)
                           unread-command-events)))
