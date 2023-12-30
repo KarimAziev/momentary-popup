@@ -299,5 +299,34 @@ To persist popup use \\<momentary-popup-switch-keymap>\
   :keymap momentary-popup-switch-keymap
   :global nil)
 
+;;;###autoload
+(defun momentary-popup-show-all-custom-types ()
+  "Display all custom types in a temporary popup."
+  (interactive)
+  (let ((print-length nil)
+        (print-level nil))
+    (momentary-popup-inspect
+     (let ((vals))
+       (mapatoms
+        (lambda (s)
+          (when-let* ((ctype
+                       (and
+                        (symbolp
+                         s)
+                        (ignore-errors
+                          (get
+                           s
+                           'custom-type)))))
+            (push
+             (cons s ctype)
+             vals))))
+       (seq-sort
+        (lambda (vala valb)
+          (let ((a (substring (symbol-name (car vala)) 0 1))
+                (b (substring (symbol-name (car valb)) 0 1)))
+            (< (string-to-char a)
+               (string-to-char b))))
+        vals)))))
+
 (provide 'momentary-popup)
 ;;; momentary-popup.el ends here
