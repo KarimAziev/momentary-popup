@@ -66,7 +66,7 @@
 (defvar momentary-popup-window-last-key nil)
 (defvar momentary-popup-content nil)
 (defvar momentary-popup-meta nil)
-(defvar momentary-popup-inspect-buffer-name "*momentary-popup-insepct*")
+(defvar momentary-popup-inspect-buffer-name "*momentary-popup-inspect*")
 (defvar momentary-popup-momentary-buffer-name "*momentary-popup*")
 
 (defun momentary-popup-fontify (content &optional mode-fn &rest args)
