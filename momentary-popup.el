@@ -1,4 +1,4 @@
-;;; momentary-popup.el --- Configure popup -*- lexical-binding: t -*-
+;;; momentary-popup.el --- Momentary display of content in popup window -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2022 Karim Aziiev <karim.aziiev@gmail.com>
 
