@@ -148,7 +148,7 @@ If SETUP-ARGS contains syntax table, it will be used in the inspect buffer."
                                      momentary-popup-inspect-keymap)))
                            (if buffer-read-only
                                (define-key map (kbd "q")
-                                           #'kill-this-buffer)
+                                           #'quit-window)
                              (define-key map (kbd "q")
                                          #'self-insert-command))
                            (add-hook
@@ -156,7 +156,7 @@ If SETUP-ARGS contains syntax table, it will be used in the inspect buffer."
                             (lambda ()
                               (if buffer-read-only
                                   (define-key map (kbd "q")
-                                              #'kill-this-buffer)
+                                              #'quit-window)
                                 (define-key map (kbd "q")
                                             #'self-insert-command)))
                             t)
