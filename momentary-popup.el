@@ -102,7 +102,7 @@ Also kill buffer `momentary-popup-inspect-buffer-name' if exists."
 
 (defvar momentary-popup-inspect-keymap
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-x 0") #'kill-this-buffer)
+    (define-key map (kbd "C-x 0") #'kill-current-buffer)
     (define-key map (kbd "C-c C-o") #'momentary-popup-maybe-find-file)
     map))
 
