@@ -85,7 +85,7 @@ If CONTENT is not a string, instead of MODE-FN emacs-lisp-mode will be used."
 
 (defun momentary-popup-minibuffer-select-window ()
   "Select minibuffer window if it is active."
-  (when-let ((wind (active-minibuffer-window)))
+  (when-let* ((wind (active-minibuffer-window)))
     (select-window wind)))
 
 ;;;###autoload
@@ -93,7 +93,7 @@ If CONTENT is not a string, instead of MODE-FN emacs-lisp-mode will be used."
   "If `header-line-format' is a file, open it.
 Also kill buffer `momentary-popup-inspect-buffer-name' if exists."
   (interactive)
-  (when-let ((file (seq-find #'file-exists-p (seq-filter
+  (when-let* ((file (seq-find #'file-exists-p (seq-filter
                                              #'stringp
                                              momentary-popup-meta))))
     (when (get-buffer momentary-popup-inspect-buffer-name)
@@ -261,7 +261,7 @@ Display remains until next event is input.
 To persist popup use \\<momentary-popup-switch-keymap>\
  `\\[momentary-popup-open-inspector]'."
   (interactive "f")
-  (when-let ((filename (and
+  (when-let* ((filename (and
                         file
                         (file-readable-p file)
                         (file-exists-p file)
